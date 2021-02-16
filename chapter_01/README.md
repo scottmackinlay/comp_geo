@@ -1,0 +1,7 @@
+# Chapter 01 Excercises
+
+1.1 Prove the intersection of two convex sets is convex.  
+- Convex sets are defined as the set of points such that for any pair of points, the line conecting those points is contained in the set. Take two convex sets, A and B, and two points within their intersection, p and q. The line connecting p and q cannot cross the border of A (by definition), nor can it cross the border of B. The border of A intersect B is entirely made of the borders of A and B and therefore p and q don't cross. Thus the intersection is convex.  
+- Suppose some smallest perimiter polygon P containing a set of points \P. Suppose that we take two points on the perimeter p and q, and for some set p and q a line can be drawn between them which crosses the polygon P. If this were the case, the perimeter could be reduced by replacing the section between p and q with the line pq which is necessarily smaller. Therefore, P is not the smallest perimeter polygon. 
+
+1.4 Show that the sign of the determinant of [1, px, py; 1, qx, qy; 1, rx, ry] determines if r is to the right or left of pq. Reflecting r over pq will switch the side while retaining the determinant (taken as true). The function that does this is: -2(pr - pr * ())
