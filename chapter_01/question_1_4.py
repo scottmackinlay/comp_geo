@@ -1,5 +1,5 @@
 """
-Can determinants tell you which side of a line a point is on?????? (yep!)
+How do you use a determinant to tell which side of a line a point is on?
 """
 
 
