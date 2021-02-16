@@ -9,12 +9,13 @@ from matplotlib import pyplot as plt
 import unittest
 
 def reflect(a, b):
-    """Reflect a across vector b
+    """Reflect point a across vector b
     """
     return 2 * proj(a,b) - a
 
 def proj(a,b):
-    """Projects a onto b
+    """Projects vector a onto vector b
+    returns the projected vector
     """
     return np.dot(a,b) * b / (np.linalg.norm(b)**2)
 
@@ -40,6 +41,10 @@ class Test(unittest.TestCase):
         self.assertTrue(np.allclose(reflect(a,b),np.asarray([10.3, 9.8])))
 
     def test_det(self):
+    	"""Compute the determinant of mat (made by stacking the vectors for point a and vector b)
+   	and compare that to the determinant of mat when we reflect a over b. 
+   	The goal is that these two determinants are equal and opposite. 
+    	"""
         for _ in range(100):
             mat = np.random.rand(2, 2)
             a = mat[0, :]
