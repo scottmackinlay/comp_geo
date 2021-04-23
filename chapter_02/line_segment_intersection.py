@@ -5,59 +5,6 @@ from matplotlib import pyplot as plt
 from matplotlib import collections  as mc
 import random
 
-class BST():
-    def __init__(self, data, comp_func):
-        self.comp_func = comp_func
-        self.data = data
-        self.left_child = None
-        self.right_child = None
-    
-
-    def insert_point(self, data):
-        is_greater = self.comp_func(data, self.data)
-        if not is_greater:
-            if self.right_child is None:
-                self.right_child = BST(data, self.comp_func)
-            else:
-                self.right_child.insert_point(data)
-        else:
-            if self.left_child is None:
-                self.left_child = BST(data, self.comp_func)
-            else:
-                self.left_child.insert_point(data)
-    
-    def depth(self):
-        lc_depth = 1
-        rc_depth = 1
-        if self.right_child is not None:
-            rc_depth =  1 + self.right_child.depth()      
-        if self.left_child is not None:
-            lc_depth = 1 + self.left_child.depth()
-
-        return max(rc_depth, lc_depth)
-
-    def __repr__(self):
-        depth = self.depth()
-        chars = 2**(depth+1)
-        pad = " "*chars
-        
-        lc_str = "X"
-        rc_str = "X"
-        if self.left_child is not None:
-            lc_str = self.left_child.__repr__()
-        if self.right_child is not None:
-            rc_str = self.right_child.__repr__()
-
-        cur_line = f"{pad}{depth}{pad}"
-        pipe_line = ""
-        child_line = ""
-
-        if self.left_child is None and self.right_child is None:
-            return f"{self.data}" 
-        return f"({self.data}, {lc_str}, {rc_str})"
-        # return f"{pad}{depth}{pad}\n{lc_str}{pad[:int(chars/2)]}{rc_str}"
-        
-
 def gen_rand_lines(num_lines = 10, grid_points: Optional[int] =None):
     # produces a #N, 2, 2 numpy array corresponding to a lot of lines
     points = np.random.rand(num_lines * 2, 2)
@@ -93,55 +40,61 @@ def line_sort(points, lines):
     lines_sorted = lines_oriented[np.lexsort((points[lines_oriented[:,0]][:,0], points[lines_oriented[:,0]][:,1]), axis=0)]
     return(points, np.flipud(lines_sorted))
 
+def point_comp(p1, p2):
+    """Returns True if p1 is down/left of p2, where down (y value) is first
+    compared, and if the y values are close, left-right is compared.
+    """
+    if np.isclose(p1[1], p2[1]):
+        return p1[0] < p2[0]
+    else:
+        return p1[1] < p2[1]
+
+
 def calc_intersections(points: np.ndarray, lines: np.ndarray):
-    _, lines_sorted = line_sort(points, lines)
-    
-    
-    queue = lines_sorted[:,0]
+    _, lines = line_sort(points, lines)
+    events = [(l, p, False) for l, p in enumerate(lines[:,0])]
+    events.reverse()
     status = []
     min_x = np.min(points[:,0])
     max_x = np.max(points[:,0])
     
     queue_idx = 0
     while True:
-        pt_idx = queue[queue_idx]
-        pt = points[pt_idx]
-        
-        # Add point to queue
-        # queue.insert
-        
-        status.append(queue_idx)
-        
-        
-        
-        
-        
-        fig, plt_ax = plot_lines(points, lines_sorted, show=False)
+        # Get the next event and handle it
+        line_idx, point_idx, has_seen_line = events.pop()
+        point = points[point_idx]
+        # If the event point corresponds to a line we've added the first point
+        # of, add the second point of the line to our events
+        if not has_seen_line:
+            
+            line = lines[line_idx]
+            print(points[line[1]])
+            ins_idx = 0
+            print(point, events)
+            # TODO (Max and Scott): Insert the bottom point of the line into
+            # our event list. 
+            for event in events:
+                if point_comp(points[line[1]], points[event[1]]):
+                    ins_idx = event[1]
+            print(ins_idx)
+        # If it's a second point in a line, we remove the line from status or
+        # something.
 
-        sweeping_line = mc.LineCollection([[(min_x, pt[1]), (max_x, pt[1])]], linewidths=2)
+        # If it's an intersection, return it.
 
+            # events.insert()
+        # print(ins_idx)
+
+
+        fig, plt_ax = plot_lines(points, lines, show=False)
+        sweeping_line = mc.LineCollection([[(min_x, point[1]), (max_x, point[1])]], linewidths=2, color='black',)
         plt_ax.add_collection(sweeping_line)
         plt.show(block=True)
-        queue_idx += 1
-        if queue_idx == len(queue):
+
+        if len(events) == 0:
             break
-
-
-
 
 
 if __name__ == "__main__":
     # calc_intersections(gen_rand_lines(10, grid_points=10))
-    # calc_intersections(*gen_rand_lines(3))
-    def comp_func(p1, p2): 
-        return p1 < p2
-    
-    p0 = 5
-    bst = BST(p0, comp_func)
-    # print(bst)
-    for i in range(6):
-        insert = random.randint(0,10)
-        bst.insert_point(insert)
-        print(insert)
-    print(bst)
-    print(bst.depth())
+    calc_intersections(*gen_rand_lines(3))
