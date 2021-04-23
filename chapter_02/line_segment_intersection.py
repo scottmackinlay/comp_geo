@@ -3,7 +3,7 @@ import numpy as np
 
 from matplotlib import pyplot as plt
 from matplotlib import collections  as mc
-
+import random
 
 class BST():
     def __init__(self, data, comp_func):
@@ -15,7 +15,7 @@ class BST():
 
     def insert_point(self, data):
         is_greater = self.comp_func(data, self.data)
-        if is_greater:
+        if not is_greater:
             if self.right_child is None:
                 self.right_child = BST(data, self.comp_func)
             else:
@@ -26,15 +26,37 @@ class BST():
             else:
                 self.left_child.insert_point(data)
     
+    def depth(self):
+        lc_depth = 1
+        rc_depth = 1
+        if self.right_child is not None:
+            rc_depth =  1 + self.right_child.depth()      
+        if self.left_child is not None:
+            lc_depth = 1 + self.left_child.depth()
+
+        return max(rc_depth, lc_depth)
+
     def __repr__(self):
-        if self.left_child is None:
-            return '|\nx'
-        else:
-            return self.left_child.__repr__()
-        if self.right_child is None:
-            return '|\nx'
-        else:
-            return self.right_child.__repr__()
+        depth = self.depth()
+        chars = 2**(depth+1)
+        pad = " "*chars
+        
+        lc_str = "X"
+        rc_str = "X"
+        if self.left_child is not None:
+            lc_str = self.left_child.__repr__()
+        if self.right_child is not None:
+            rc_str = self.right_child.__repr__()
+
+        cur_line = f"{pad}{depth}{pad}"
+        pipe_line = ""
+        child_line = ""
+
+        if self.left_child is None and self.right_child is None:
+            return f"{self.data}" 
+        return f"({self.data}, {lc_str}, {rc_str})"
+        # return f"{pad}{depth}{pad}\n{lc_str}{pad[:int(chars/2)]}{rc_str}"
+        
 
 def gen_rand_lines(num_lines = 10, grid_points: Optional[int] =None):
     # produces a #N, 2, 2 numpy array corresponding to a lot of lines
@@ -111,11 +133,15 @@ def calc_intersections(points: np.ndarray, lines: np.ndarray):
 if __name__ == "__main__":
     # calc_intersections(gen_rand_lines(10, grid_points=10))
     # calc_intersections(*gen_rand_lines(3))
-    def comp_func(p1, p2):
-        return p1[0] < p2[0]
+    def comp_func(p1, p2): 
+        return p1 < p2
     
-    p0 = [0,0]
+    p0 = 5
     bst = BST(p0, comp_func)
-    bst.insert_point([1,0])
-    bst.insert_point([-0.5, 1])
-    print(bst.left_child, bst.right_child)
+    # print(bst)
+    for i in range(6):
+        insert = random.randint(0,10)
+        bst.insert_point(insert)
+        print(insert)
+    print(bst)
+    print(bst.depth())
